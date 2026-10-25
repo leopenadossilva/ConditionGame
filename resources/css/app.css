@@ -1,0 +1,8 @@
+@import 'tailwindcss';
+
+@source '../../resources/js/**/*.tsx';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
