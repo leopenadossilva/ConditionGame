@@ -2,6 +2,7 @@
 
 namespace App\Game;
 
+use App\Models\Enemy;
 use App\Models\Player;
 use Illuminate\Support\Facades\Http;
 use Throwable;
@@ -113,9 +114,33 @@ class AgentService
      */
     private function chatHeuristically(string $message): array
     {
-        $normalized = strtolower($message);
+        $normalized = strtolower(trim($message));
         $calls = [];
-        $lines = [];
+
+        if (preg_match('/^(hi|hello|hey|yo|hiya|thanks|thank you|cheers)\b/', $normalized)) {
+            return [
+                'reply' => 'I can read the world for you: ask about enemies, a specific enemy, or your own status.',
+                'tool_calls' => [],
+                'mode' => 'heuristic',
+            ];
+        }
+
+        $enemyName = $this->matchEnemyName($normalized);
+
+        if ($enemyName !== null) {
+            $result = $this->tools->call('enemy_get', ['name' => $enemyName]);
+            $calls[] = ['name' => 'enemy_get', 'arguments' => ['name' => $enemyName], 'result' => $result];
+
+            $enemy = $result['enemy'];
+
+            return [
+                'reply' => $enemy === null
+                    ? $result['error']
+                    : "{$enemy['name']} is level {$enemy['level']} with {$enemy['hp']}/{$enemy['max_hp']} HP. It drops {$enemy['xp_reward']} XP and {$enemy['gold_reward']} gold.",
+                'tool_calls' => $calls,
+                'mode' => 'heuristic',
+            ];
+        }
 
         $wantsEnemies = (bool) preg_match('/enem|fight|battle|monster|kill|boss/', $normalized);
         $wantsPlayer = (bool) preg_match('/\b(player|health|hp|status|me|level|gold|xp)\b/', $normalized);
@@ -129,25 +154,55 @@ class AgentService
                 $result['enemies'],
             );
 
-            $lines[] = 'Enemies out there: '.implode(', ', $names).'.';
+            return [
+                'reply' => 'Enemies out there: '.implode(', ', $names).'.',
+                'tool_calls' => $calls,
+                'mode' => 'heuristic',
+            ];
         }
 
-        if ($wantsPlayer || ! $wantsEnemies) {
+        if ($wantsPlayer) {
             $result = $this->tools->call('player_get');
             $calls[] = ['name' => 'player_get', 'arguments' => [], 'result' => $result];
 
             $player = $result['player'];
-            $lines[] = "{$player['name']} is level {$player['level']} with {$player['hp']}/{$player['max_hp']} HP, {$player['xp']} XP and {$player['gold']} gold.";
-        }
 
-        if (! $wantsEnemies && ! $wantsPlayer) {
-            $lines[] = 'I can check the world for you — ask about enemies or your own status.';
+            return [
+                'reply' => "{$player['name']} is level {$player['level']} with {$player['hp']}/{$player['max_hp']} HP, {$player['xp']} XP and {$player['gold']} gold.",
+                'tool_calls' => $calls,
+                'mode' => 'heuristic',
+            ];
         }
 
         return [
-            'reply' => implode(' ', $lines),
-            'tool_calls' => $calls,
+            'reply' => 'I can read the world for you: ask about enemies, a specific enemy, or your own status.',
+            'tool_calls' => [],
             'mode' => 'heuristic',
         ];
+    }
+
+    private function matchEnemyName(string $normalized): ?string
+    {
+        $names = Enemy::query()->pluck('name');
+
+        foreach ($names as $name) {
+            $lower = strtolower($name);
+
+            if (str_contains($normalized, $lower)) {
+                return $name;
+            }
+
+            $tokens = collect(explode(' ', $lower))
+                ->filter(fn (string $token) => strlen($token) >= 3)
+                ->sortByDesc(fn (string $token) => strlen($token));
+
+            foreach ($tokens as $token) {
+                if (preg_match('/\b'.preg_quote($token, '/').'\b/', $normalized)) {
+                    return $name;
+                }
+            }
+        }
+
+        return null;
     }
 }

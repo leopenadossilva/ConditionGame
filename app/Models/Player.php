@@ -24,6 +24,9 @@ class Player extends Model
         return static::query()->orderBy('id')->firstOrFail();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toGameArray(): array
     {
         return [

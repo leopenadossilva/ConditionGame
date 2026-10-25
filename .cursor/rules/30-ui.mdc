@@ -1,0 +1,21 @@
+---
+description: UI and interaction rules for the React/Inertia client
+globs: resources/js/**
+alwaysApply: false
+---
+
+# UI rules
+
+80% useful, 20% beautiful.
+
+- Dark, quiet surfaces. One accent: emerald for helper/positive, red for danger. No new hues
+  for decoration.
+- Every async control: disabled while pending, progress visible, failure recoverable inline.
+- Always design empty, loading, and error states.
+- Chat: player right, Sage left; tool calls are small evidence chips under the reply.
+- Numbers legible at a glance: bars for HP, units on every stat, no float formatting.
+- Keyboard: visible focus, Enter sends, Escape clears. Buttons are `<button>`.
+- Contrast ≥ 4.5:1 for body text; never color alone for state.
+- No layout shift when replies or chips appear. Support 360px width.
+
+See `.claude/skills/ui-craft/SKILL.md` for the review pass.

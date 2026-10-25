@@ -1,0 +1,28 @@
+---
+description: Testing rules and quality gates
+globs: tests/**,app/**,resources/js/**
+alwaysApply: false
+---
+
+# Testing
+
+Tests run on **Postgres**, in the isolated `conditiongame_test` database, through
+`./dev.sh test`. Never SQLite, never the dev database.
+
+## What to write
+
+- **Unit** (`tests/Unit`): pure logic, registries, formatting.
+- **Feature** (`tests/Feature`): HTTP endpoints, Inertia pages, tool behavior against the DB.
+- **Eval** (`tests/Eval`): fixed prompt → expected tool calls. Add a case whenever Sage's
+  behavior changes. Record LLM output instead of calling a live model in CI.
+- **Smoke** (`scripts/smoke.php`): real HTTP against the running stack.
+
+## Rules
+
+- Assert behavior, not implementation. One reason to fail per test.
+- A bug fix starts with a test that reproduces it.
+- Factories/seeders provide the minimum data; do not depend on other tests.
+- No sleeps. No network in tests. Freeze time when time matters.
+- `./dev.sh check` must be green before reporting done.
+
+When a test is hard to write, the design is usually wrong. Fix the design first.

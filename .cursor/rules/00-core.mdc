@@ -1,0 +1,21 @@
+---
+description: Core rules for every change in ConditionGame
+alwaysApply: true
+---
+
+# ConditionGame core rules
+
+Read `AGENTS.md` for the full working agreement. Non-negotiables:
+
+1. Postgres only. No SQLite, including tests. pgvector is available.
+2. One Laravel + Inertia + React app. No second API service.
+3. Every game capability is a tool first (`app/Game/Tools`), registered in `AppServiceProvider`.
+4. Server is authoritative for HP, damage, loot, and conditions.
+5. Sage never invents data; it reads through tools.
+6. Docker only: `./dev.sh up|down|test|check|smoke|fresh`.
+7. Prove it: behavior change ships with a test, eval, or smoke check. `./dev.sh check` green.
+
+When the owner is vague or non-technical, use `.claude/skills/discovery/SKILL.md`: restate,
+ask at most five questions, offer at most three options, confirm the slice, then build.
+
+Report honestly: what changed, what you verified, what you did not.

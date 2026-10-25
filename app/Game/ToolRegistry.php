@@ -30,6 +30,10 @@ class ToolRegistry
         return isset($this->tools[$name]);
     }
 
+    /**
+     * @param  array<string, mixed>  $arguments
+     * @return array<string, mixed>
+     */
     public function call(string $name, array $arguments = []): array
     {
         if (! $this->has($name)) {

@@ -1,0 +1,22 @@
+---
+description: Agent and tool layer rules
+globs: app/Game/**,config/agent.php
+alwaysApply: false
+---
+
+# Agent layer
+
+Sage is a tool-using helper, not a chatbot with a game-themed prompt.
+
+- Every tool implements `App\Game\Tools\GameTool` and is registered in `AppServiceProvider`.
+- `description()` is written for a model: when to call it, what it returns.
+- Validate arguments inside `handle()`, even when the caller is trusted.
+- Return structured arrays. Failures return an `error` key, not an exception, unless the
+  situation is a programming error.
+- Tools are read-only until a write path has explicit intent and confirmation (later: a
+  confirmation token from the player).
+- Never compute values the database owns. Query them.
+- Keep the loop bounded (`config/agent.max_steps`) and log tool calls with arguments.
+- When the LLM is unavailable, the deterministic path must still call real tools and never
+  fabricate data.
+- Add or update an eval in `tests/Eval` for any behavior change.

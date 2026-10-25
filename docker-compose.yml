@@ -26,7 +26,8 @@ services:
         condition: service_healthy
 
   postgres:
-    image: postgres:16-alpine
+    # pgvector image: plain Postgres + the vector extension for future RAG/embeddings.
+    image: pgvector/pgvector:pg16
     container_name: conditiongame_postgres
     restart: unless-stopped
     environment:
@@ -35,6 +36,7 @@ services:
       POSTGRES_PASSWORD: conditiongame
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
     ports:
       - "5432:5432"
     healthcheck:

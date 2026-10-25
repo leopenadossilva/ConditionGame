@@ -21,6 +21,9 @@ class Enemy extends Model
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toGameArray(): array
     {
         return [

@@ -1,0 +1,22 @@
+---
+description: Architecture boundaries and layering
+globs: app/**,database/**,routes/**
+alwaysApply: false
+---
+
+# Architecture
+
+```
+HTTP (thin)  ->  Game service / tools  ->  Eloquent models  ->  Postgres
+UI (React)   ->  Inertia page props / JSON API                 (display only)
+```
+
+- Controllers validate input and delegate. No game rules in controllers.
+- Tools are the only agent-facing surface. Adding a game capability means adding a tool.
+- Models hold persistence and small derived helpers (`toGameArray`). No HTTP awareness.
+- Prefer plain PHP services over events/queues until a real need appears.
+- No abstraction with a single implementation. No interfaces invented for tests alone.
+- Migrations are append-only once merged. Rename by adding, backfilling, then removing.
+- Integer math for game numbers. Never floats for HP, damage, gold, or XP.
+
+If a change needs a new layer, justify it in the commit message in one sentence.

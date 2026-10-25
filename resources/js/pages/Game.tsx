@@ -40,11 +40,7 @@ interface Props {
     enemies: Enemy[];
 }
 
-const SUGGESTIONS = [
-    'What enemies are out there?',
-    'How am I doing?',
-    'Who should I fight first?',
-];
+const SUGGESTIONS = ['What enemies are out there?', 'How am I doing?', 'Who should I fight first?'];
 
 let nextId = 1;
 
@@ -145,7 +141,10 @@ export default function Game({ player, enemies }: Props) {
 
                     <div className="grid gap-3 overflow-y-auto pr-1 sm:grid-cols-2">
                         {enemies.map((enemy) => (
-                            <article key={enemy.id} className="rounded-lg border border-neutral-800 bg-neutral-950/70 p-4">
+                            <article
+                                key={enemy.id}
+                                className="rounded-lg border border-neutral-800 bg-neutral-950/70 p-4"
+                            >
                                 <div className="mb-1 flex items-baseline justify-between gap-2">
                                     <h3 className="font-medium text-white">{enemy.name}</h3>
                                     <span className="text-xs text-neutral-500">Lv {enemy.level}</span>
@@ -154,7 +153,9 @@ export default function Game({ player, enemies }: Props) {
                                 <div className="mb-2 h-1.5 overflow-hidden rounded-full bg-neutral-800">
                                     <div
                                         className="h-full rounded-full bg-red-500/80"
-                                        style={{ width: `${Math.round((enemy.hp / Math.max(enemy.max_hp, 1)) * 100)}%` }}
+                                        style={{
+                                            width: `${Math.round((enemy.hp / Math.max(enemy.max_hp, 1)) * 100)}%`,
+                                        }}
                                     />
                                 </div>
                                 <div className="flex justify-between text-[11px] text-neutral-500">
@@ -210,7 +211,10 @@ export default function Game({ player, enemies }: Props) {
 
                     <div ref={logRef} className="flex-1 space-y-4 overflow-y-auto p-4">
                         {messages.map((message) => (
-                            <div key={message.id} className={message.role === 'player' ? 'flex justify-end' : 'flex justify-start'}>
+                            <div
+                                key={message.id}
+                                className={message.role === 'player' ? 'flex justify-end' : 'flex justify-start'}
+                            >
                                 <div
                                     className={
                                         message.role === 'player'
